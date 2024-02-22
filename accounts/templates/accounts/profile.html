@@ -1,0 +1,82 @@
+{% extends 'base.html' %} {% load static %} {% block head_title %}Laibrary System{% endblock %} {% block content %} 
+
+
+<div class="bg-white pb-12 mt-5 px-4">
+    <div class="flex items-center justify-between ">
+        <h4 class="font-bold text-3xl text-left pb-5">Account No: {{request.user.account.account_no}}</h4>
+        <a href="{% url 'update_profile' %}"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            Update Profile
+        </a>
+        <a href="{% url 'password_change' %}"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            Change Password
+        </a>
+    </div>
+
+    <div class="my-8">
+        {% if borrowed_books_details %}
+        <h2 class="text-2xl font-bold mb-4">Borrowed Books List:</h2>
+        <table class="border-collapse border border-blue-100">
+            <thead>
+                <tr>
+                    <th class="border border-blue-300">ID</th>
+                    <th class="border border-blue-300">Title</th>
+                    <th class="border border-blue-300">Acion</th>
+                    <th class="border border-blue-300">Price</th>
+                    <th class="border border-blue-300">Date</th>
+                    <th class="border border-blue-300">Balance After Transaction</th>
+                    <th class="border border-blue-300">Transaction Type</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                {% for h in borrowed_books_details %}
+                <tr>
+                    <td class="border border-blue-400 px-4 py-2">{{ h.book.id }}</td>
+                    <td class="border border-blue-400 px-4 py-2">
+                        <a href="{% url 'book_detail' h.book.id %}" class="text-blue-500 hover:text-blue-700">{{ h.book.title }}</a>
+                    </td>
+                    <td class="border border-blue-400 px-4 py-2">
+                        <a href="{% url 'book_detail' h.book.id %}" class="text-blue-500 hover:text-blue-700">Return the book</a>
+                    </td>
+                    <td class="border border-blue-400 px-4 py-2">${{ h.book.price }}</td>
+                    <td class="border border-blue-400 px-4 py-2">
+                        <ul>
+                            {% for transaction in h.details %}
+                            <li>
+                                {{ transaction.timestamp }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td class="border border-blue-400 px-4 py-2">
+                        <ul>
+                            {% for transaction in h.details %}
+                            <li>
+                                {{ transaction.balance_after_transaction }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td class="border border-blue-400 px-4 py-2">
+                        <ul>
+                            {% for transaction in h.details %}
+                            <li class="font-sans font-black">
+                                {{ transaction.get_transaction_type_display }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <h1 class="text-2xl font-bold text-center">No books borrowed.</h1>
+        {% endif %}
+
+    </div>   
+</div>
+{% include "footer.html" %}
+{% endblock %}
+                                    
