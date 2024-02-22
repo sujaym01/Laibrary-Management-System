@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+# Import dj-database-url at the beginning of the file.
+import dj_database_url
 from pathlib import Path
 import environ
 env = environ.Env()
@@ -91,18 +92,23 @@ WSGI_APPLICATION = 'library_management_system.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': env("DB_NAME"),
+#         'USER': env("DB_USER"),
+#         'PASSWORD': env("DB_PASSWORD"),
+#         'HOST': env("DB_HOST"),
+#         'PORT': env("DB_PORT"),
+#     }
+# }
+
+# Replace the SQLite DATABASES configuration with PostgreSQL:
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env("DB_NAME"),
-        'USER': env("DB_USER"),
-        'PASSWORD': env("DB_PASSWORD"),
-        'HOST': env("DB_HOST"),
-        'PORT': env("DB_PORT"),
-    }
-}
-
-
+    'default': dj_database_url.config(        
+        # Replace this value with your local database's connection string.
+        default='postgres://laibrary_management_system_user:sfr6ZKghnYptDynyo1Qo9EJOunnG0exx@dpg-cnbcn6mv3ddc73capd1g-a.oregon-postgres.render.com/laibrary_management_system',
+    )}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
