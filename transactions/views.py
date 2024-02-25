@@ -66,7 +66,7 @@ class DepositMoneyView(TransactionCreateMixin):
 
         messages.success(
             self.request,
-            f'{"{:,.2f}".format(float(amount))}$ was deposited to your account successfully'
+            f'{"{:,.2f}".format(float(amount))}$ was deposited to your account successfully.!'
         )
 
         # mail_subject = "Deposite Message"

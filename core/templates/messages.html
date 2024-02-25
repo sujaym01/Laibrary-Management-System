@@ -1,4 +1,4 @@
-{% for message in messages %}
+{% comment %} {% for message in messages %}
 
 <div class="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md mt-2 mx-12" role="alert">
     <div class="flex">
@@ -12,4 +12,20 @@
     </div>
 </div>
 
+{% endfor %} {% endcomment %}
+
+
+{% for message in messages  %}
+    <!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>-->
+   
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: '{{message.tags}}',
+                title: 'Status',
+                text: '{{message}}',
+                confirmButtonText: 'OK'
+            });
+        });
+    </script>
 {% endfor %}

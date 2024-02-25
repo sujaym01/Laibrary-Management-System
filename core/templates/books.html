@@ -17,7 +17,7 @@
             </div>
             <p class="text-gray-300">Description this book:</p>
             <p style="height: 80px;" class="text-gray-600">{{ book.description }}</p><br>
-            <div class="text-center mt-16">
+            <div class="text-center mt-24 mb-2">
                 {% if user.is_authenticated %}
                 <a href="{% url 'book_detail' book_id=book.id %}"
                     class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-300">View Details</a>

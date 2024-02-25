@@ -23,6 +23,7 @@ class UserAddress(models.Model):
     city = models.CharField(max_length= 100)
     postal_code = models.IntegerField()
     country = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='accounts/media/uploads', blank=True, null=True)
 
     # def __str__(self):
     #     return str(self.user.email)

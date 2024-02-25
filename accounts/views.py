@@ -16,6 +16,11 @@ from django.template.loader import render_to_string
 from books.models import Book
 from transactions.models import Transaction
 from transactions.constants import BORROWED, RETURN
+from django.contrib.auth import update_session_auth_hash   
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.views import PasswordChangeView
+from transactions.views import send_transaction_email
+from accounts.models import UserAddress, UserLibraryAccount
 # Create your views here.
 
 
@@ -37,6 +42,9 @@ class UserRegistrationView(FormView):
         user = form.save()
         print(form.cleaned_data)
         login(self.request, user)
+        messages.success(
+                self.request, 'Your registration has been successfully!'
+        )
         return super().form_valid(form)
 
     # def form_invalid(self, form):
@@ -77,7 +85,8 @@ class UserProfileUpdateView(LoginRequiredMixin,View):
         if form.is_valid():
             form.save()
             messages.success(
-                request, 'Your profile has been updated successfully!')
+                request, 'Your profile has been updated successfully!'
+            )
             return redirect('update_profile')  # Redirect to the user's profile page
         return render(request, self.template_name, {'form': form})
 
@@ -100,11 +109,45 @@ class UserProfileUpdateView(LoginRequiredMixin,View):
 #             print(form.errors)
 #         return render(request, self.template_name, {'form': form})
 
+#################################################################################
+    
+# from accounts.models import UserAddress, UserLibraryAccount
+# class UserProfileView(LoginRequiredMixin, View):
+#     template_name = 'accounts/profile.html'
+#     def get(self, request):
+#         user_address = UserAddress.objects.filter(user=request.user).first()
+#         print(user_address.country, user_address.image)
+        
+#         # user_address = UserAddress.objects.filter(user_id=request.user)
+#         # for i in user_address:
+#         #     print(i.country, i.user, i.city, i.street_address,i.postal_code, i.image)
+          
+#         # user_bank_account = UserLibraryAccount.objects.filter(user_id =request.user)
+#         # for i in user_bank_account:
+#         #     print(i.user, i.account_no, i.account_type, i.balance, i.birth_date, i.gender, i.initial_deposite_date)
+#         return render(request, self.template_name,{'user_address':user_address})
+    
+
 
 class UserProfileView(LoginRequiredMixin, View):
     template_name = 'accounts/profile.html'
     
     def get(self, request):
+
+        user_address = UserAddress.objects.filter(user=request.user).first()
+        # print(user_address.country, user_address.image)
+        
+        # user_address = UserAddress.objects.filter(user_id=request.user)
+        # for i in user_address:
+        #     print(i.country, i.user, i.city, i.street_address,i.postal_code, i.image)
+          
+        # user_bank_account = UserLibraryAccount.objects.filter(user_id =request.user)
+        # for i in user_bank_account:
+        #     print(i.user, i.account_no, i.account_type, i.balance, i.birth_date, i.gender, i.initial_deposite_date)
+    
+
+
+
         borrowed_books = Book.objects.filter(borrowers=request.user)
         # for book in borrowed_books:
         #     print(book.title, book.price, book.categories)
@@ -132,12 +175,14 @@ class UserProfileView(LoginRequiredMixin, View):
             
         context = {
             'user': request.user,
+            'user_address': user_address,
             # 'borrowed_books': borrowed_books,
             'borrowed_books_details': borrowed_books_details,
             # 'all_transactions': all_transactions,
         }
         return render(request, self.template_name, context=context)
-
+        # return render(request, self.template_name, context)
+###########################################################################
 @login_required
 def password_change(request):
     if request.user.is_authenticated:
@@ -161,3 +206,33 @@ def password_change(request):
         return render(request, 'accounts/password_change_form.html', {'form': form, 'title': 'Change Your Password'})
     else:
         return redirect('home')
+    
+#................................................................................
+# from django.contrib.auth import update_session_auth_hash   
+# from django.contrib.auth.forms import PasswordChangeForm
+# from django.contrib.auth.views import PasswordChangeView
+# from transactions.views import send_transaction_email
+class UserPasswordChangeView(PasswordChangeView):
+    template_name = 'accounts/password_change_form.html'
+    form_class = PasswordChangeForm
+    # success_url = reverse_lazy('password_change')
+    success_url = reverse_lazy('home')
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(
+            self.request, 'Your password was successfully updated!'
+        )
+                
+        # Updating the password logs out all other sessions for the user
+        # except the current one.
+        update_session_auth_hash(self.request, form.user)
+        send_transaction_email(
+                    self.request.user,
+                    '' ,
+                    'Password Changed',
+                    'accounts/password_change_mail.html'
+                    )
+        return super().form_valid(form)
+    
+    

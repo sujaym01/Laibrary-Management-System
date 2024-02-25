@@ -11,9 +11,13 @@ class UserRegistrationForm(UserCreationForm):
     city = forms.CharField(max_length= 100)
     postal_code = forms.IntegerField()
     country = forms.CharField(max_length=100)
+    image = forms.ImageField()
     class Meta:
         model = User
-        fields = ['username', 'password1', 'password2', 'first_name', 'last_name', 'email', 'birth_date','gender', 'postal_code', 'city','country', 'street_address']
+        fields = ['username', 'password1', 'password2', 'first_name', 
+            'last_name', 'email', 'birth_date','gender', 'postal_code', 
+            'city','country', 'street_address', 'image'
+        ]
         
     def save(self, commit=True):
         our_user = super().save(commit=False)
@@ -25,13 +29,15 @@ class UserRegistrationForm(UserCreationForm):
             birth_date = self.cleaned_data.get('birth_date')
             city = self.cleaned_data.get('city')
             street_address = self.cleaned_data.get('street_address')
+            image = self.cleaned_data.get('image')
             
             UserAddress.objects.create(
                 user = our_user,
                 postal_code = postal_code,
                 country = country,
                 city = city,
-                street_address = street_address
+                street_address = street_address,
+                image = image
             )
             UserLibraryAccount.objects.create(
                 user = our_user,
@@ -64,6 +70,7 @@ class UserUpdateForm(forms.ModelForm):
     city = forms.CharField(max_length=100)
     postal_code = forms.IntegerField()
     country = forms.CharField(max_length=100)
+    image = forms.ImageField()
 
     class Meta:
         model = User
@@ -96,6 +103,7 @@ class UserUpdateForm(forms.ModelForm):
                 self.fields['city'].initial = user_address.city
                 self.fields['postal_code'].initial = user_address.postal_code
                 self.fields['country'].initial = user_address.country
+                self.fields['image'].initial = user_address.image
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -111,6 +119,7 @@ class UserUpdateForm(forms.ModelForm):
             user_address.city = self.cleaned_data['city']
             user_address.postal_code = self.cleaned_data['postal_code']
             user_address.country = self.cleaned_data['country']
+            user_address.image = self.cleaned_data['image']
             user_address.save()
 
         return user
